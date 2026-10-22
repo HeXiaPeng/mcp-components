@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+  "pageId": "mcp-servers",
+  "dataSources": {
+    "mcpServers": {
+      "type": "memory",
+      "entity": "McpServer"
+    }
+  },
+  "initialState": {
+    "ui": {
+      "createVisible": false,
+      "editVisible": false,
+      "queryVisible": false,
+      "editing": null,
+      "queryFilter": {}
+    }
+  },
+  "nodes": [
+    {
+      "id": "mcpTable",
+      "type": "table",
+      "title": "MCP 服务器管理",
+      "dataSourceId": "mcpServers",
+      "rowKey": "id",
+      "columns": [
+        { "key": "name", "title": "服务器名称", "dataIndex": "name", "width": 260 },
+        { "key": "command", "title": "启动命令", "dataIndex": "command", "width": 120 },
+        { "key": "args", "title": "启动参数", "dataIndex": "args", "width": 320 },
+        { "key": "status", "title": "运行状态", "dataIndex": "status", "width": 120 },
+        { "key": "toolsCount", "title": "工具数", "dataIndex": "toolsCount", "width": 100 },
+        { "key": "lastUsedAt", "title": "最近使用", "dataIndex": "lastUsedAt", "width": 180 },
+        { "key": "createdAt", "title": "创建时间", "dataIndex": "createdAt", "width": 180 }
+      ],
+      "topRightButtons": [
+        {
+          "key": "create",
+          "text": "新增服务器",
+          "type": "primary",
+          "placement": "topRight",
+          "action": "mcpServers.openCreate"
+        },
+        {
+          "key": "query",
+          "text": "查询筛选",
+          "placement": "topRight",
+          "action": "mcpServers.openQuery"
+        },
+        {
+          "key": "refresh",
+          "text": "刷新列表",
+          "placement": "topRight",
+          "action": "mcpServers.refresh"
+        }
+      ],
+      "rowRightButtons": [
+        {
+          "key": "toggle",
+          "text": "启动/停止",
+          "placement": "rowRight",
+          "action": "mcpServers.toggleStatus"
+        },
+        {
+          "key": "edit",
+          "text": "编辑",
+          "placement": "rowRight",
+          "action": "mcpServers.openEdit"
+        },
+        {
+          "key": "restart",
+          "text": "重启",
+          "placement": "rowRight",
+          "action": "mcpServers.restart"
+        },
+        {
+          "key": "delete",
+          "text": "删除",
+          "placement": "rowRight",
+          "action": "mcpServers.deleteRow",
+          "danger": true,
+          "confirm": { "title": "确认删除该 MCP 服务器吗？" }
+        }
+      ]
+    },
+    {
+      "id": "createModal",
+      "type": "modalForm",
+      "visibleStateKey": "ui.createVisible",
+      "onSubmitAction": "mcpServers.submitCreate",
+      "modal": {
+        "title": "新增 MCP 服务器",
+        "width": 680,
+        "submitText": "确认添加",
+        "cancelText": "取消",
+        "fields": [
+          { "key": "name", "label": "服务器名称", "placeholder": "例如：mcp-server-custom", "required": true },
+          { "key": "command", "label": "启动命令", "placeholder": "例如：npx / npm / python3", "required": true },
+          { "key": "args", "label": "启动参数", "placeholder": "例如：-y @scope/mcp-server 或 run dev", "required": true },
+          { "key": "description", "label": "功能描述", "placeholder": "简单描述该 MCP 服务器提供的能力" }
+        ]
+      }
+    },
+    {
+      "id": "editModal",
+      "type": "modalForm",
+      "visibleStateKey": "ui.editVisible",
+      "valueStateKey": "ui.editing",
+      "onSubmitAction": "mcpServers.submitEdit",
+      "modal": {
+        "title": "编辑 MCP 服务器",
+        "width": 680,
+        "submitText": "保存修改",
+        "cancelText": "取消",
+        "fields": [
+          { "key": "name", "label": "服务器名称", "placeholder": "例如：mcp-server-custom", "required": true },
+          { "key": "command", "label": "启动命令", "placeholder": "例如：npx / npm / python3", "required": true },
+          { "key": "args", "label": "启动参数", "placeholder": "例如：-y @scope/mcp-server 或 run dev", "required": true },
+          { "key": "description", "label": "功能描述", "placeholder": "简单描述该 MCP 服务器提供的能力" }
+        ]
+      }
+    },
+    {
+      "id": "queryModal",
+      "type": "modalForm",
+      "visibleStateKey": "ui.queryVisible",
+      "onSubmitAction": "mcpServers.applyQuery",
+      "modal": {
+        "title": "查询筛选",
+        "width": 560,
+        "submitText": "查询",
+        "cancelText": "重置",
+        "fields": [
+          { "key": "keyword", "label": "关键字", "placeholder": "服务器名称 / 启动命令" },
+          { "key": "status", "label": "运行状态", "placeholder": "running / stopped / error" }
+        ]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "mcpServers.refresh",
+      "type": "table.refresh",
+      "args": { "tableId": "mcpTable", "dataSourceId": "mcpServers", "filterStateKey": "ui.queryFilter" }
+    },
+    { "id": "mcpServers.openCreate", "type": "ui.setVisible", "args": { "key": "ui.createVisible", "value": true } },
+    { "id": "mcpServers.openQuery", "type": "ui.setVisible", "args": { "key": "ui.queryVisible", "value": true } },
+    { "id": "mcpServers.openEdit", "type": "custom" },
+    { "id": "mcpServers.toggleStatus", "type": "custom" },
+    { "id": "mcpServers.restart", "type": "custom" },
+    {
+      "id": "mcpServers.deleteRow",
+      "type": "table.deleteRow",
+      "args": { "tableId": "mcpTable", "dataSourceId": "mcpServers", "refreshActionId": "mcpServers.refresh" }
+    },
+    {
+      "id": "mcpServers.submitCreate",
+      "type": "custom",
+      "args": {}
+    },
+    {
+      "id": "mcpServers.submitEdit",
+      "type": "custom",
+      "args": {}
+    },
+    { "id": "mcpServers.applyQuery", "type": "custom" }
+  ]
+}

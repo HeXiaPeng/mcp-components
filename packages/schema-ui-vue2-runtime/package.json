@@ -1,0 +1,58 @@
+{
+  "name": "schema-ui-vue2-runtime",
+  "version": "0.1.0",
+  "description": "Schema 驱动前端组件框架运行时（Vue 2.6 + Ant Design Vue 1.7）。声明式配置 Schema（nodes / actions / initialState / dataSources）即可生成完整 CRUD 后台页面，内置表格、表单、弹窗、按钮、插槽扩展、运行态 state 管理与 Effects 联动。配合 MCP 服务器 mcp-components-ui-schema 可实现 AI 对话生成页面。",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "vue2",
+    "ant-design-vue",
+    "schema-ui",
+    "declarative-ui",
+    "lowcode",
+    "codegen",
+    "mcp",
+    "modelcontextprotocol"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=16"
+  },
+  "peerDependencies": {
+    "ant-design-vue": "^1.7.2",
+    "vue": "^2.6.11",
+    "vue-router": "^3.6.5"
+  },
+  "peerDependenciesMeta": {
+    "vue-router": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.30",
+    "ant-design-vue": "1.7.2",
+    "esbuild": "^0.25.1",
+    "typescript": "~5.3.3",
+    "vue": "2.6.11",
+    "vue-router": "^3.6.5",
+    "vue-template-compiler": "2.6.11"
+  },
+  "scripts": {
+    "build": "rm -rf dist && npm run build:esm && npm run build:cjs && npm run build:types && npm run build:copy-vue",
+    "build:esm": "node _build-bundle.mjs --format=esm",
+    "build:cjs": "node _build-bundle.mjs --format=cjs",
+    "build:types": "./node_modules/.bin/tsc -p tsconfig.build.json --emitDeclarationOnly --declaration --outDir dist",
+    "build:copy-vue": "cd src && find . -type f -name '*.vue' -exec sh -c 'mkdir -p \"../dist/$(dirname \"$1\")\" && cp \"$1\" \"../dist/$1\"' _ {} \\;",
+    "prepare": "npm run build"
+  }
+}

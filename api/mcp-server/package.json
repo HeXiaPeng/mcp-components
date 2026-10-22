@@ -1,0 +1,42 @@
+{
+  "name": "mcp-components-ui-schema",
+  "version": "0.1.0",
+  "description": "Schema 驱动前端组件库（Vue2 + Ant Design Vue 1.x）的 MCP 服务器。提供 13 个工具：模板查询（button/field/action/table/modal 等字段说明与示例）、配置校验、页面 Schema CRUD（增删改查 src/pages/**/pageSchema.json）、运行态 state 模拟（dispatch 执行 action 验证逻辑）。",
+  "type": "module",
+  "bin": {
+    "mcp-components-ui-schema": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "mcp",
+    "modelcontextprotocol",
+    "schema",
+    "ant-design-vue",
+    "vue2",
+    "codegen",
+    "ui-schema",
+    "lowcode"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node18 --format=esm --outfile=dist/index.js --banner:js=\"#!/usr/bin/env node\"",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.11.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.30",
+    "esbuild": "^0.25.1",
+    "tsx": "^4.19.2",
+    "typescript": "~5.3.3"
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "pageId": "form-linkage",
+  "dataSources": {},
+  "initialState": {
+    "ui": {
+      "form": {
+        "userId": "",
+        "name": "",
+        "shortName": "",
+        "email": ""
+      }
+    }
+  },
+  "nodes": [
+    {
+      "id": "linkForm",
+      "type": "form",
+      "title": "联动表单页",
+      "modelStateKey": "ui.form",
+      "fields": [
+        {
+          "key": "userId",
+          "label": "远程用户ID",
+          "placeholder": "输入 1-10，点击“远程查询”回填字段",
+          "required": true
+        },
+        {
+          "key": "name",
+          "label": "姓名",
+          "placeholder": "修改后会联动生成“简称”"
+        },
+        {
+          "key": "shortName",
+          "label": "简称",
+          "placeholder": "由“姓名”自动生成",
+          "disabled": true
+        },
+        {
+          "key": "email",
+          "label": "邮箱",
+          "placeholder": "远程查询后自动回填"
+        }
+      ],
+      "effects": [
+        { "on": "name", "type": "template", "target": "shortName", "template": "{value}" }
+      ],
+      "buttons": [
+        {
+          "key": "remoteFill",
+          "text": "远程查询",
+          "type": "primary",
+          "placement": "topRight",
+          "action": "formLinkage.remoteFill"
+        },
+        {
+          "key": "reset",
+          "text": "清空",
+          "placement": "topRight",
+          "action": "formLinkage.reset"
+        },
+        {
+          "key": "export",
+          "text": "导出当前数据",
+          "placement": "topRight",
+          "action": "formLinkage.export"
+        },
+        {
+          "key": "openHelp",
+          "text": "功能说明",
+          "placement": "topRight",
+          "action": "formLinkage.help"
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "formLinkage.remoteFill",
+      "type": "request.fillForm",
+      "args": {
+        "urlTemplate": "https://jsonplaceholder.typicode.com/users/{ui.form.userId}",
+        "targetStateKey": "ui.form",
+        "mapToState": {
+          "name": "name",
+          "email": "email"
+        }
+      }
+    },
+    { "id": "formLinkage.reset", "type": "form.reset", "args": { "targetStateKey": "ui.form" } },
+    { "id": "formLinkage.export", "type": "custom" },
+    { "id": "formLinkage.help", "type": "custom" }
+  ]
+}
+

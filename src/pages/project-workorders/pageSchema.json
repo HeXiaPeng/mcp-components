@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "pageId": "project-workorders",
+  "dataSources": {
+    "pendingWorkOrders": {
+      "type": "memory",
+      "entity": "PendingWorkOrder"
+    },
+    "createdWorkOrders": {
+      "type": "memory",
+      "entity": "CreatedWorkOrder"
+    }
+  },
+  "initialState": {
+    "ui": {
+      "queryForm": {
+        "customerName": "",
+        "projectName": ""
+      },
+      "currentProjectId": "P001",
+      "currentProject": null,
+      "pendingQueryFilter": {},
+      "prodSelectVisible": false,
+      "prodSelectForm": {
+        "prodId": ""
+      },
+      "createMode": "single",
+      "selectedPendingIds": [],
+      "singleTarget": null
+    }
+  },
+  "nodes": [
+    {
+      "id": "queryForm",
+      "type": "form",
+      "title": "查询条件",
+      "modelStateKey": "ui.queryForm",
+      "fields": [
+        {
+          "key": "customerName",
+          "label": "客户",
+          "placeholder": "请输入客户名称（如：阿里巴巴）",
+          "col": 12
+        },
+        {
+          "key": "projectName",
+          "label": "项目",
+          "placeholder": "请输入项目名称（如：ECS 扩容）",
+          "col": 12
+        }
+      ],
+      "buttons": [
+        {
+          "key": "doSearch",
+          "text": "查询",
+          "type": "primary",
+          "placement": "topRight",
+          "action": "projectWo.doSearch"
+        },
+        {
+          "key": "downloadExcel",
+          "text": "下载 Excel",
+          "placement": "topRight",
+          "action": "projectWo.downloadExcel"
+        }
+      ]
+    },
+    {
+      "id": "pendingWoTable",
+      "type": "table",
+      "title": "待创建工单",
+      "meta": {
+        "enableSelection": true,
+        "selectedRowKeysStateKey": "ui.selectedPendingIds"
+      },
+      "dataSourceId": "pendingWorkOrders",
+      "rowKey": "id",
+      "columns": [
+        { "key": "code", "title": "待创建单号", "dataIndex": "id", "width": 130 },
+        { "key": "title", "title": "标题", "dataIndex": "title", "width": 240 },
+        { "key": "type", "title": "类型", "dataIndex": "type", "width": 80 },
+        { "key": "priority", "title": "优先级", "dataIndex": "priority", "width": 80 },
+        { "key": "requester", "title": "提出人", "dataIndex": "requester", "width": 90 },
+        { "key": "expectedAt", "title": "期望完成时间", "dataIndex": "expectedAt", "width": 140 },
+        { "key": "description", "title": "描述", "dataIndex": "description" }
+      ],
+      "topRightButtons": [
+        {
+          "key": "batchCreate",
+          "text": "批量创建工单",
+          "type": "primary",
+          "placement": "topRight",
+          "action": "projectWo.openBatchCreate"
+        }
+      ],
+      "rowRightButtons": [
+        {
+          "key": "createSingle",
+          "text": "创建工单",
+          "type": "primary",
+          "placement": "rowRight",
+          "action": "projectWo.openSingleCreate"
+        }
+      ]
+    },
+    {
+      "id": "createdWoTable",
+      "type": "table",
+      "title": "已创建的工单",
+      "dataSourceId": "createdWorkOrders",
+      "rowKey": "id",
+      "columns": [
+        { "key": "code", "title": "工单号", "dataIndex": "id", "width": 140 },
+        { "key": "title", "title": "标题", "dataIndex": "title", "width": 240 },
+        { "key": "type", "title": "类型", "dataIndex": "type", "width": 80 },
+        { "key": "priority", "title": "优先级", "dataIndex": "priority", "width": 80 },
+        { "key": "prodName", "title": "关联产品", "dataIndex": "prodName", "width": 160 },
+        { "key": "requester", "title": "提出人", "dataIndex": "requester", "width": 90 },
+        { "key": "createdAt", "title": "创建时间", "dataIndex": "createdAt", "width": 160 }
+      ],
+      "topRightButtons": [
+        {
+          "key": "refreshCreated",
+          "text": "刷新",
+          "placement": "topRight",
+          "action": "projectWo.refreshCreated"
+        }
+      ]
+    },
+    {
+      "id": "prodSelectModal",
+      "type": "modalForm",
+      "visibleStateKey": "ui.prodSelectVisible",
+      "valueStateKey": "ui.prodSelectForm",
+      "onSubmitAction": "projectWo.submitCreate",
+      "modal": {
+        "title": "请选择产品（ProdId）",
+        "width": 640,
+        "submitText": "确认创建",
+        "cancelText": "取消",
+        "fields": [
+          {
+            "key": "prodId",
+            "label": "产品（ProdId，单选）",
+            "placeholder": "请选择一个产品",
+            "required": true,
+            "inputType": "radio",
+            "defaultValue": "PROD-001",
+            "options": [
+              { "label": "标准实施服务（SVC-STD-IMP）", "value": "PROD-001", "description": "标准实施类服务产品，含 40 人天现场+远程支持" },
+              { "label": "高级开发服务（SVC-ADV-DEV）", "value": "PROD-002", "description": "高级开发服务产品，含资深工程师 60 人天定制开发" },
+              { "label": "算法模型调优服务（SVC-ML-TUNE）", "value": "PROD-003", "description": "算法调优服务产品，含模型迁移、A/B 验证、参数调优" },
+              { "label": "测试与质量服务（SVC-QA-TEST）", "value": "PROD-004", "description": "测试服务产品，含功能/性能/安全三类测试及报告输出" },
+              { "label": "运维值守服务（SVC-OPS-7X24）", "value": "PROD-005", "description": "7x24 运维值守服务，按月计费" },
+              { "label": "培训与交付服务（SVC-TRAIN-DEL）", "value": "PROD-006", "description": "培训服务产品，含现场培训、教材编写、考试认证" }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "projectWo.doSearch",
+      "type": "custom",
+      "args": { "note": "前端 onCustomAction 处理：根据查询条件筛选项目列表，取第一个匹配项目作为 currentProjectId，然后刷新待创建工单" }
+    },
+    {
+      "id": "projectWo.downloadExcel",
+      "type": "custom",
+      "args": { "note": "前端 onCustomAction 处理：导出当前项目待创建工单为 xlsx/csv" }
+    },
+    {
+      "id": "projectWo.openBatchCreate",
+      "type": "custom",
+      "args": { "note": "前端 onCustomAction 处理：把 ui.selectedPendingIds（多选的）作为批量创建目标，打开 prod 选择弹窗" }
+    },
+    {
+      "id": "projectWo.openSingleCreate",
+      "type": "custom",
+      "args": { "note": "前端 onCustomAction 处理：payload.record 作为单条创建目标，打开 prod 选择弹窗" }
+    },
+    {
+      "id": "projectWo.submitCreate",
+      "type": "custom",
+      "args": { "note": "前端 onCustomAction 处理：从 ui.prodSelectForm.prodId 取所选产品，结合单/批量目标，创建工单，写到 createdWorkOrders 数据源" }
+    },
+    {
+      "id": "projectWo.refreshPending",
+      "type": "table.refresh",
+      "args": {
+        "tableId": "pendingWoTable",
+        "dataSourceId": "pendingWorkOrders"
+      }
+    },
+    {
+      "id": "projectWo.refreshCreated",
+      "type": "table.refresh",
+      "args": {
+        "tableId": "createdWoTable",
+        "dataSourceId": "createdWorkOrders"
+      }
+    }
+  ]
+}

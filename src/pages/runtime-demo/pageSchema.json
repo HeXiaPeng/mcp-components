@@ -1,0 +1,189 @@
+{
+  "schemaVersion": 1,
+  "pageId": "runtime-demo",
+  "dataSources": {
+    "books": {
+      "type": "memory",
+      "entity": "RuntimeDemoBook"
+    }
+  },
+  "initialState": {
+    "ui": {
+      "createVisible": false,
+      "editing": null,
+      "editVisible": false,
+      "queryFilter": {},
+      "queryVisible": false
+    }
+  },
+  "nodes": [
+    {
+      "id": "booksTable",
+      "type": "table",
+      "title": "📦 运行时包演示 · 图书管理（schema-ui-vue2-runtime）",
+      "dataSourceId": "books",
+      "rowKey": "id",
+      "columns": [
+        { "key": "id", "title": "图书编号", "dataIndex": "id", "width": 110 },
+        { "key": "title", "title": "书名", "dataIndex": "title", "width": 280 },
+        { "key": "author", "title": "作者", "dataIndex": "author", "width": 160 },
+        { "key": "category", "title": "分类", "dataIndex": "category", "width": 110 },
+        { "key": "price", "title": "价格(¥)", "dataIndex": "price", "width": 110 },
+        { "key": "inStock", "title": "有货", "dataIndex": "inStock", "width": 90 },
+        { "key": "publishedAt", "title": "出版日期", "dataIndex": "publishedAt", "width": 150 }
+      ],
+      "topRightButtons": [
+        { "key": "create", "text": "新增图书", "type": "primary", "placement": "topRight", "action": "books.openCreate" },
+        { "key": "query", "text": "查询筛选", "placement": "topRight", "action": "books.openQuery" },
+        { "key": "refresh", "text": "刷新列表", "placement": "topRight", "action": "books.refresh" }
+      ],
+      "rowRightButtons": [
+        { "key": "edit", "text": "编辑", "placement": "rowRight", "action": "books.openEdit" },
+        { "key": "toggleStock", "text": "切换库存", "placement": "rowRight", "action": "books.toggleStock" },
+        { "key": "delete", "text": "删除", "placement": "rowRight", "action": "books.deleteRow", "danger": true, "confirm": { "title": "确认删除这本图书吗？" } }
+      ]
+    },
+    {
+      "id": "createModal",
+      "type": "modalForm",
+      "visibleStateKey": "ui.createVisible",
+      "onSubmitAction": "books.submitCreate",
+      "modal": {
+        "title": "新增图书（通过 schema-ui-vue2-runtime）",
+        "width": 680,
+        "submitText": "确认添加",
+        "cancelText": "取消",
+        "fields": [
+          { "key": "title", "label": "书名", "placeholder": "例如：深入浅出 xxx", "required": true, "col": 12 },
+          { "key": "author", "label": "作者", "placeholder": "作者姓名", "required": true, "col": 12 },
+          {
+            "key": "category",
+            "label": "分类",
+            "required": true,
+            "col": 12,
+            "inputType": "select",
+            "options": [
+              { "label": "技术", "value": "技术" },
+              { "label": "产品", "value": "产品" },
+              { "label": "设计", "value": "设计" },
+              { "label": "商业", "value": "商业" }
+            ]
+          },
+          { "key": "price", "label": "价格(¥)", "placeholder": "例如 99", "required": true, "col": 12 },
+          {
+            "key": "inStock",
+            "label": "是否有货",
+            "col": 12,
+            "inputType": "radio",
+            "defaultValue": true,
+            "options": [
+              { "label": "有货", "value": true },
+              { "label": "缺货", "value": false }
+            ]
+          },
+          { "key": "publishedAt", "label": "出版日期", "placeholder": "YYYY-MM-DD", "col": 12 },
+          { "key": "description", "label": "图书描述", "placeholder": "一句话描述这本书的核心价值" }
+        ]
+      }
+    },
+    {
+      "id": "editModal",
+      "type": "modalForm",
+      "visibleStateKey": "ui.editVisible",
+      "valueStateKey": "ui.editing",
+      "onSubmitAction": "books.submitEdit",
+      "modal": {
+        "title": "编辑图书（通过 schema-ui-vue2-runtime）",
+        "width": 680,
+        "submitText": "保存修改",
+        "cancelText": "取消",
+        "fields": [
+          { "key": "title", "label": "书名", "placeholder": "例如：深入浅出 xxx", "required": true, "col": 12 },
+          { "key": "author", "label": "作者", "placeholder": "作者姓名", "required": true, "col": 12 },
+          {
+            "key": "category",
+            "label": "分类",
+            "required": true,
+            "col": 12,
+            "inputType": "select",
+            "options": [
+              { "label": "技术", "value": "技术" },
+              { "label": "产品", "value": "产品" },
+              { "label": "设计", "value": "设计" },
+              { "label": "商业", "value": "商业" }
+            ]
+          },
+          { "key": "price", "label": "价格(¥)", "placeholder": "例如 99", "required": true, "col": 12 },
+          {
+            "key": "inStock",
+            "label": "是否有货",
+            "col": 12,
+            "inputType": "radio",
+            "options": [
+              { "label": "有货", "value": true },
+              { "label": "缺货", "value": false }
+            ]
+          },
+          { "key": "publishedAt", "label": "出版日期", "placeholder": "YYYY-MM-DD", "col": 12 },
+          { "key": "description", "label": "图书描述", "placeholder": "一句话描述这本书的核心价值" }
+        ]
+      }
+    },
+    {
+      "id": "queryModal",
+      "type": "modalForm",
+      "visibleStateKey": "ui.queryVisible",
+      "onSubmitAction": "books.applyQuery",
+      "modal": {
+        "title": "查询筛选图书",
+        "width": 560,
+        "submitText": "查询",
+        "cancelText": "重置",
+        "fields": [
+          { "key": "keyword", "label": "关键字", "placeholder": "书名 / 作者" },
+          {
+            "key": "category",
+            "label": "分类",
+            "inputType": "select",
+            "options": [
+              { "label": "全部", "value": "" },
+              { "label": "技术", "value": "技术" },
+              { "label": "产品", "value": "产品" },
+              { "label": "设计", "value": "设计" },
+              { "label": "商业", "value": "商业" }
+            ]
+          },
+          {
+            "key": "inStock",
+            "label": "库存状态",
+            "inputType": "radio",
+            "options": [
+              { "label": "全部", "value": "" },
+              { "label": "有货", "value": true },
+              { "label": "缺货", "value": false }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "actions": [
+    { "id": "books.openCreate", "type": "ui.setVisible", "args": { "key": "ui.createVisible", "value": true } },
+    { "id": "books.openQuery", "type": "ui.setVisible", "args": { "key": "ui.queryVisible", "value": true } },
+    {
+      "id": "books.refresh",
+      "type": "table.refresh",
+      "args": { "tableId": "booksTable", "dataSourceId": "books", "filterStateKey": "ui.queryFilter" }
+    },
+    { "id": "books.openEdit", "type": "custom" },
+    { "id": "books.toggleStock", "type": "custom" },
+    {
+      "id": "books.deleteRow",
+      "type": "table.deleteRow",
+      "args": { "tableId": "booksTable", "dataSourceId": "books", "refreshActionId": "books.refresh" }
+    },
+    { "id": "books.submitCreate", "type": "custom", "args": {} },
+    { "id": "books.submitEdit", "type": "custom", "args": {} },
+    { "id": "books.applyQuery", "type": "custom" }
+  ]
+}

@@ -1,0 +1,63 @@
+export interface RuntimeDemoBook {
+  id: string
+  title: string
+  author: string
+  category: '技术' | '产品' | '设计' | '商业'
+  price: number
+  inStock: boolean
+  publishedAt: string
+  description: string
+}
+
+export const initialBooks: RuntimeDemoBook[] = [
+  {
+    id: 'BK-001',
+    title: 'Vue.js 设计与实现',
+    author: '霍春阳',
+    category: '技术',
+    price: 99,
+    inStock: true,
+    publishedAt: '2024-03-15',
+    description: '深入浅出 Vue 3 响应式系统、渲染器和编译器的内部实现原理',
+  },
+  {
+    id: 'BK-002',
+    title: 'Model Context Protocol 实战',
+    author: 'AI Engineering Team',
+    category: '技术',
+    price: 68,
+    inStock: true,
+    publishedAt: '2025-06-20',
+    description: '从零构建 MCP 服务器，打通 AI 与本地工具链的完整指南',
+  },
+  {
+    id: 'BK-003',
+    title: '启示录：打造用户喜爱的产品',
+    author: 'Marty Cagan',
+    category: '产品',
+    price: 78,
+    inStock: false,
+    publishedAt: '2019-11-08',
+    description: '硅谷产品经理的圣经，讲述产品从 0 到 1 的方法论',
+  },
+  {
+    id: 'BK-004',
+    title: '写给大家看的设计书',
+    author: 'Robin Williams',
+    category: '设计',
+    price: 49,
+    inStock: true,
+    publishedAt: '2022-01-12',
+    description: '亲密性、对齐、重复、对比四大设计原则的通俗讲解',
+  },
+  {
+    id: 'BK-005',
+    title: '从 0 到 1',
+    author: 'Peter Thiel',
+    category: '商业',
+    price: 45,
+    inStock: true,
+    publishedAt: '2015-10-05',
+    description: '硅谷创业教父关于垄断、创新和从零构建未来的思考',
+  },
+]

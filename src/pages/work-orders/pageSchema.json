@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "pageId": "work-orders",
+  "dataSources": {
+    "workOrders": {
+      "type": "memory",
+      "entity": "WorkOrder"
+    }
+  },
+  "initialState": {
+    "ui": {
+      "createVisible": false,
+      "editVisible": false,
+      "queryVisible": false,
+      "editing": null,
+      "queryFilter": {}
+    }
+  },
+  "nodes": [
+    {
+      "id": "woTable",
+      "type": "table",
+      "title": "工单系统测试页",
+      "dataSourceId": "workOrders",
+      "rowKey": "id",
+      "columns": [
+        { "key": "code", "title": "工单号", "dataIndex": "code", "width": 120 },
+        { "key": "title", "title": "标题", "dataIndex": "title", "width": 260 },
+        { "key": "status", "title": "状态", "dataIndex": "status", "width": 120 },
+        { "key": "createdAt", "title": "创建时间", "dataIndex": "createdAt", "width": 180 }
+      ],
+      "topRightButtons": [
+        {
+          "key": "create",
+          "text": "新增",
+          "type": "primary",
+          "placement": "topRight",
+          "action": "workOrders.openCreate"
+        },
+        {
+          "key": "query",
+          "text": "查询",
+          "placement": "topRight",
+          "action": "workOrders.openQuery"
+        }
+      ],
+      "rowRightButtons": [
+        {
+          "key": "edit",
+          "text": "编辑",
+          "placement": "rowRight",
+          "action": "workOrders.openEdit"
+        },
+        {
+          "key": "delete",
+          "text": "删除",
+          "placement": "rowRight",
+          "action": "workOrders.deleteRow",
+          "danger": true,
+          "confirm": { "title": "确认删除该工单吗？" }
+        }
+      ]
+    },
+    {
+      "id": "createModal",
+      "type": "modalForm",
+      "visibleStateKey": "ui.createVisible",
+      "onSubmitAction": "workOrders.submitCreate",
+      "modal": {
+        "title": "新增工单",
+        "width": 640,
+        "submitText": "提交",
+        "cancelText": "取消",
+        "fields": [
+          { "key": "code", "label": "工单号", "placeholder": "例如：WO-1001", "required": true },
+          {
+            "key": "title",
+            "label": "标题",
+            "placeholder": "请输入工单标题",
+            "required": true,
+            "linkage": [
+              { "when": { "field": "status", "equals": "关闭" }, "then": { "disabled": true } }
+            ]
+          },
+          { "key": "status", "label": "状态", "placeholder": "待处理 / 处理中 / 关闭", "required": true },
+          {
+            "key": "owner",
+            "label": "处理人",
+            "placeholder": "请输入处理人",
+            "linkage": [
+              { "when": { "field": "status", "equals": "关闭" }, "then": { "disabled": true, "setValue": "系统" } }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "editModal",
+      "type": "modalForm",
+      "visibleStateKey": "ui.editVisible",
+      "valueStateKey": "ui.editing",
+      "onSubmitAction": "workOrders.submitEdit",
+      "modal": {
+        "title": "编辑工单",
+        "width": 640,
+        "submitText": "提交",
+        "cancelText": "取消",
+        "fields": [
+          { "key": "code", "label": "工单号", "placeholder": "例如：WO-1001", "required": true },
+          {
+            "key": "title",
+            "label": "标题",
+            "placeholder": "请输入工单标题",
+            "required": true,
+            "linkage": [
+              { "when": { "field": "status", "equals": "关闭" }, "then": { "disabled": true } }
+            ]
+          },
+          { "key": "status", "label": "状态", "placeholder": "待处理 / 处理中 / 关闭", "required": true },
+          {
+            "key": "owner",
+            "label": "处理人",
+            "placeholder": "请输入处理人",
+            "linkage": [
+              { "when": { "field": "status", "equals": "关闭" }, "then": { "disabled": true, "setValue": "系统" } }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "queryModal",
+      "type": "modalForm",
+      "visibleStateKey": "ui.queryVisible",
+      "onSubmitAction": "workOrders.applyQuery",
+      "modal": {
+        "title": "查询",
+        "width": 560,
+        "submitText": "查询",
+        "cancelText": "取消",
+        "fields": [
+          { "key": "keyword", "label": "关键字", "placeholder": "工单号 / 标题" },
+          { "key": "status", "label": "状态", "placeholder": "待处理 / 处理中 / 关闭" }
+        ]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "workOrders.refresh",
+      "type": "table.refresh",
+      "args": { "tableId": "woTable", "dataSourceId": "workOrders", "filterStateKey": "ui.queryFilter" }
+    },
+    { "id": "workOrders.openCreate", "type": "ui.setVisible", "args": { "key": "ui.createVisible", "value": true } },
+    { "id": "workOrders.openQuery", "type": "ui.setVisible", "args": { "key": "ui.queryVisible", "value": true } },
+    { "id": "workOrders.openEdit", "type": "custom" },
+    {
+      "id": "workOrders.deleteRow",
+      "type": "table.deleteRow",
+      "args": { "tableId": "woTable", "dataSourceId": "workOrders", "refreshActionId": "workOrders.refresh" }
+    },
+    {
+      "id": "workOrders.submitCreate",
+      "type": "modal.submitToDataSource",
+      "args": { "dataSourceId": "workOrders", "mode": "create", "visibleStateKey": "ui.createVisible", "refreshActionId": "workOrders.refresh" }
+    },
+    {
+      "id": "workOrders.submitEdit",
+      "type": "modal.submitToDataSource",
+      "args": { "dataSourceId": "workOrders", "mode": "update", "visibleStateKey": "ui.editVisible", "editRecordStateKey": "ui.editing", "refreshActionId": "workOrders.refresh" }
+    },
+    { "id": "workOrders.applyQuery", "type": "custom" }
+  ]
+}
+
