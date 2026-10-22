@@ -20,7 +20,7 @@
     {
       "id": "booksTable",
       "type": "table",
-      "title": "📦 运行时包演示 · 图书管理（schema-ui-vue2-runtime）",
+      "title": "📦 运行时演示 · 图书管理（本地源码）",
       "dataSourceId": "books",
       "rowKey": "id",
       "columns": [
@@ -49,7 +49,7 @@
       "visibleStateKey": "ui.createVisible",
       "onSubmitAction": "books.submitCreate",
       "modal": {
-        "title": "新增图书（通过 schema-ui-vue2-runtime）",
+        "title": "新增图书（本地运行时）",
         "width": 680,
         "submitText": "确认添加",
         "cancelText": "取消",
@@ -93,7 +93,7 @@
       "valueStateKey": "ui.editing",
       "onSubmitAction": "books.submitEdit",
       "modal": {
-        "title": "编辑图书（通过 schema-ui-vue2-runtime）",
+        "title": "编辑图书（本地运行时）",
         "width": 680,
         "submitText": "保存修改",
         "cancelText": "取消",

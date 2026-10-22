@@ -18,7 +18,7 @@
 
 <script>
 import Vue from 'vue'
-import { SchemaCard } from 'schema-ui-vue2-runtime'
+import SchemaCard from '@/components/base/SchemaCard.vue'
 import { initialWorkOrders } from './mock'
 
 export default Vue.extend({

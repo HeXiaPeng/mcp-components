@@ -31,11 +31,9 @@
 
 <script>
 import Vue from 'vue'
-import {
-  SchemaCard,
-  SchemaForm,
-  SchemaTable,
-} from 'schema-ui-vue2-runtime'
+import SchemaCard from '@/components/base/SchemaCard.vue'
+import SchemaForm from '@/components/base/SchemaForm.vue'
+import SchemaTable from '@/components/base/SchemaTable.vue'
 import { initialWorkOrders } from './mock'
 
 const filterFields = [

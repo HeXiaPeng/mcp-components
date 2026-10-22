@@ -2,11 +2,11 @@
   <SchemaRenderer v-if="runtime" :schema="schema" :runtime="runtime">
     <template #table-toolbarLeft-booksTable>
       <div style="color:#595959;font-size:12px;">
-        💡 本页所有组件 & 运行时均来自
+        💡 本页所有组件 & 运行时均来自本地源码
         <code style="background:#f0f5ff;padding:2px 6px;border-radius:4px;color:#1677ff;">
-          npm link schema-ui-vue2-runtime
+          @/components + @/renderer + @/runtime
         </code>
-        ，而非源码 <code>@/xxx</code> 相对路径
+        相对路径引用
       </div>
     </template>
   </SchemaRenderer>
@@ -17,12 +17,10 @@ import Vue from 'vue'
 import { initialBooks } from './mock'
 import schema from './pageSchema.json'
 
-import {
-  SchemaRenderer,
-  createSchemaRuntime,
-  createFetchRequestAdapter,
-  createMemoryDataSource,
-} from 'schema-ui-vue2-runtime'
+import SchemaRenderer from '@/renderer/SchemaRenderer.vue'
+import { createSchemaRuntime } from '@/runtime/createRuntime'
+import { createFetchRequestAdapter } from '@/runtime/adapters/request'
+import { createMemoryDataSource } from '@/runtime/adapters/memoryDataSource'
 
 function todayStr() {
   const d = new Date()
