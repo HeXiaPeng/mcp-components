@@ -9,25 +9,24 @@
   </a-layout-sider>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue'
-import type { AppMenuItem } from '@/layout/menu'
 
 export default Vue.extend({
   name: 'AppSider',
   props: {
     items: {
-      type: Array as () => AppMenuItem[],
+      type: Array,
       required: true,
     },
   },
   computed: {
-    selectedKeys(): string[] {
+    selectedKeys() {
       return [this.$route.path]
     },
   },
   methods: {
-    onMenuClick(info: any) {
+    onMenuClick(info) {
       if (info && info.key && info.key !== this.$route.path) {
         this.$router.push(info.key)
       }

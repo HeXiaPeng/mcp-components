@@ -88,7 +88,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue'
 import schema from './pageSchema.json'
 import {
@@ -97,29 +97,24 @@ import {
   pendingWorkOrdersMap,
   prodIdOptions,
   initialCreatedWorkOrders,
-  type ProjectInfo,
-  type PendingWorkOrder,
-  type CreatedWorkOrder,
-  type ProdIdOption,
 } from './mock'
 import SchemaRenderer from '@/renderer/SchemaRenderer.vue'
 import { createSchemaRuntime } from '@/runtime/createRuntime'
 import { createFetchRequestAdapter } from '@/runtime/adapters/request'
 import { createMemoryDataSource } from '@/runtime/adapters/memoryDataSource'
-import type { SchemaRuntime } from '@/runtime/types'
 
-function formatNow(): string {
+function formatNow() {
   const d = new Date()
-  const pad = (n: number) => String(n).padStart(2, '0')
+  const pad = (n) => String(n).padStart(2, '0')
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
 }
 
-function formatNumber(n: number): string {
+function formatNumber(n) {
   if (!n && n !== 0) return '-'
   return Number(n).toLocaleString('zh-CN')
 }
 
-function statusTagColor(status: string): string {
+function statusTagColor(status) {
   switch (status) {
     case '进行中':
       return 'blue'
@@ -132,7 +127,7 @@ function statusTagColor(status: string): string {
   }
 }
 
-function nextWoId(): string {
+function nextWoId() {
   const seq = String(Date.now()).slice(-4)
   return `WO-${seq}`
 }
@@ -142,21 +137,21 @@ export default Vue.extend({
   components: { SchemaRenderer },
   data() {
     return {
-      schema: schema as any,
-      runtime: null as SchemaRuntime | null,
+      schema: schema,
+      runtime: null,
     }
   },
   computed: {
-    currentProject(): ProjectInfo | null {
+    currentProject() {
       if (!this.runtime) return null
       const pid = this.runtime.getState('ui.currentProjectId')
       if (!pid) return null
       const hit = projectList.find((p) => p.id === String(pid))
       return hit || null
     },
-    matchedProjects(): ProjectInfo[] {
+    matchedProjects() {
       if (!this.runtime) return []
-      const qf = (this.runtime.getState('ui.queryForm') as any) || {}
+      const qf = this.runtime.getState('ui.queryForm') || {}
       const kwC = String(qf.customerName || '').trim()
       const kwP = String(qf.projectName || '').trim()
       return projectList.filter((p) => {
@@ -165,12 +160,12 @@ export default Vue.extend({
         return matchC && matchP
       })
     },
-    selectedIds(): (string | number)[] {
+    selectedIds() {
       if (!this.runtime) return []
       const v = this.runtime.getState('ui.selectedPendingIds')
       return Array.isArray(v) ? v : []
     },
-    pendingCountInfo(): { total: number } {
+    pendingCountInfo() {
       const pid = this.currentProject && this.currentProject.id
       if (!pid) return { total: 0 }
       const list = pendingWorkOrdersMap[pid] || []
@@ -179,7 +174,7 @@ export default Vue.extend({
   },
   created() {
     const request = createFetchRequestAdapter()
-    const pendingDs = createMemoryDataSource<PendingWorkOrder>({
+    const pendingDs = createMemoryDataSource({
       initialRows: [],
       filter(row, filter) {
         const keyword = filter && filter.keyword ? String(filter.keyword).trim() : ''
@@ -193,28 +188,28 @@ export default Vue.extend({
       },
     })
 
-    const createdDs = createMemoryDataSource<CreatedWorkOrder>({
+    const createdDs = createMemoryDataSource({
       initialRows: initialCreatedWorkOrders || [],
       sort(a, b) {
         return String(b.createdAt || '').localeCompare(String(a.createdAt || ''))
       },
     })
 
-    this.runtime = createSchemaRuntime(this.schema as any, {
+    this.runtime = createSchemaRuntime(this.schema, {
       request,
       dataSources: {
         pendingWorkOrders: pendingDs,
         createdWorkOrders: createdDs,
       },
       notify: {
-        success: (msg) => (this as any).$message.success(msg),
-        error: (msg) => (this as any).$message.error(msg),
-        loading: (msg, durationSeconds) => (this as any).$message.loading(msg, durationSeconds),
-        info: (title, content) => (this as any).$info({ title, content }),
+        success: (msg) => this.$message.success(msg),
+        error: (msg) => this.$message.error(msg),
+        loading: (msg, durationSeconds) => this.$message.loading(msg, durationSeconds),
+        info: (title, content) => this.$info({ title, content }),
       },
-      resolveFieldOptions: (field: any) => this.resolveFieldOptions(field),
+      resolveFieldOptions: (field) => this.resolveFieldOptions(field),
       onCustomAction: async ({ actionId, payload, runtime }) => {
-        const values = payload && payload.values ? (payload.values as Record<string, any>) : undefined
+        const values = payload && payload.values ? payload.values : undefined
 
         if (actionId === 'projectWo.doSearch') {
           this.doSearch(pendingDs, runtime)
@@ -227,7 +222,7 @@ export default Vue.extend({
         }
 
         if (actionId === 'projectWo.openBatchCreate') {
-          const ids = (runtime.getState('ui.selectedPendingIds') as (string | number)[]) || []
+          const ids = runtime.getState('ui.selectedPendingIds') || []
           if (!ids.length) {
             runtime.notify.error('请先勾选至少一条待创建工单后再批量创建')
             return
@@ -240,7 +235,7 @@ export default Vue.extend({
         }
 
         if (actionId === 'projectWo.openSingleCreate') {
-          const record = payload && payload.record ? (payload.record as PendingWorkOrder) : null
+          const record = payload && payload.record ? payload.record : null
           if (!record || !record.id) {
             runtime.notify.error('缺少待创建工单记录信息')
             return
@@ -254,18 +249,18 @@ export default Vue.extend({
 
         if (actionId === 'projectWo.submitCreate') {
           const prodId = values && values.prodId ? String(values.prodId) : ''
-          const prod = prodIdOptions.find((p: ProdIdOption) => p.id === prodId)
+          const prod = prodIdOptions.find((p) => p.id === prodId)
           if (!prod) {
             runtime.notify.error('请选择一个有效的产品（ProdId）')
             return
           }
           const mode = runtime.getState('ui.createMode')
-          let targets: PendingWorkOrder[] = []
+          let targets = []
           if (mode === 'single') {
-            const single = runtime.getState('ui.singleTarget') as PendingWorkOrder
+            const single = runtime.getState('ui.singleTarget')
             targets = single ? [single] : []
           } else {
-            const ids = (runtime.getState('ui.selectedPendingIds') as (string | number)[]) || []
+            const ids = runtime.getState('ui.selectedPendingIds') || []
             const idSet = new Set(ids.map((i) => String(i)))
             const currentProjectId = String(runtime.getState('ui.currentProjectId') || '')
             const pool = pendingWorkOrdersMap[currentProjectId] || []
@@ -317,23 +312,23 @@ export default Vue.extend({
   methods: {
     statusTagColor,
     formatNumber,
-    resolveFieldOptions(field: any): any {
+    resolveFieldOptions(field) {
       if (!field || typeof field !== 'object') return field
       const f = { ...field }
       if (String(f.key) === 'prodId') {
-        f.inputType = (f as any).inputType || 'radio'
-        f.options = prodIdOptions.map((p: ProdIdOption) => ({
+        f.inputType = f.inputType || 'radio'
+        f.options = prodIdOptions.map((p) => ({
           label: `${p.name}（${p.code}）`,
           value: p.id,
           description: p.description,
         }))
       }
-      if (String(f.key) === 'customerName' && !(f as any).options) {
+      if (String(f.key) === 'customerName' && !f.options) {
         f.options = customerOptions.map((c) => ({ label: c.name, value: c.id }))
       }
       return f
     },
-    doSearch(pendingDs: any, runtime: SchemaRuntime, opts?: { fallbackDefaultProject?: boolean }) {
+    doSearch(pendingDs, runtime, opts) {
       const matched = this.matchedProjects
       let first = matched[0] || null
       if (!first && opts && opts.fallbackDefaultProject) {

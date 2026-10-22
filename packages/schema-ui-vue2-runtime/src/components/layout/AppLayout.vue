@@ -9,7 +9,7 @@
   </a-layout>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue'
 import AppSider from './AppSider.vue'
 import { appMenuItems } from '../../layout/menu'

@@ -16,25 +16,25 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue'
-import { SchemaCard, type SchemaCardConfig } from 'schema-ui-vue2-runtime'
-import { initialWorkOrders, type WorkOrderRow } from './mock'
+import { SchemaCard } from 'schema-ui-vue2-runtime'
+import { initialWorkOrders } from './mock'
 
 export default Vue.extend({
   name: 'CardDemoDetailPage',
   components: { SchemaCard },
   computed: {
-    code(): string {
+    code() {
       return String(this.$route.params.code || '')
     },
-    row(): WorkOrderRow | undefined {
+    row() {
       return initialWorkOrders.find((item) => item.code === this.code)
     },
-    cardConfig(): SchemaCardConfig {
+    cardConfig() {
       return { title: this.row ? `工单详情 · ${this.row.code}` : '工单详情' }
     },
-    items(): { label: string; value: string }[] {
+    items() {
       const row = this.row
       if (!row) return []
       return [

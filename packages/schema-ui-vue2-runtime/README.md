@@ -222,7 +222,7 @@ AI 会自动用 `ui_schema_templates` → `ui_schema_validate_*` → `ui_schema_
 cd packages/schema-ui-vue2-runtime
 npm install
 npm run build
-# dist/ 会生成：index.js(ESM) + index.cjs(CJS) + index.d.ts(类型) + ...d.ts
+# dist/ 会生成：index.js(ESM) + index.cjs(CJS) + style.css
 
 # 本地联调（测试使用者 npm i 效果）
 npm link                      # 本包全局软链

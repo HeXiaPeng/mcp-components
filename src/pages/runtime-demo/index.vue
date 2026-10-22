@@ -12,9 +12,9 @@
   </SchemaRenderer>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue'
-import { initialBooks, type RuntimeDemoBook } from './mock'
+import { initialBooks } from './mock'
 import schema from './pageSchema.json'
 
 import {
@@ -22,12 +22,11 @@ import {
   createSchemaRuntime,
   createFetchRequestAdapter,
   createMemoryDataSource,
-  type SchemaRuntime,
 } from 'schema-ui-vue2-runtime'
 
-function todayStr(): string {
+function todayStr() {
   const d = new Date()
-  const pad = (n: number) => String(n).padStart(2, '0')
+  const pad = (n) => String(n).padStart(2, '0')
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 }
 
@@ -38,13 +37,13 @@ export default Vue.extend({
   },
   data() {
     return {
-      schema: schema as any,
-      runtime: null as SchemaRuntime | null,
+      schema: schema,
+      runtime: null,
     }
   },
   created() {
     const request = createFetchRequestAdapter()
-    const ds = createMemoryDataSource<RuntimeDemoBook>({
+    const ds = createMemoryDataSource({
       initialRows: initialBooks,
       filter(row, filter) {
         const keyword = filter && filter.keyword ? String(filter.keyword).trim() : ''
@@ -58,16 +57,16 @@ export default Vue.extend({
       },
     })
 
-    this.runtime = createSchemaRuntime(this.schema as any, {
+    this.runtime = createSchemaRuntime(this.schema, {
       request,
       dataSources: {
         books: ds,
       },
       notify: {
-        success: (msg) => (this as any).$message.success(msg),
-        error: (msg) => (this as any).$message.error(msg),
-        loading: (msg, durationSeconds) => (this as any).$message.loading(msg, durationSeconds),
-        info: (title, content) => (this as any).$info({ title, content }),
+        success: (msg) => this.$message.success(msg),
+        error: (msg) => this.$message.error(msg),
+        loading: (msg, durationSeconds) => this.$message.loading(msg, durationSeconds),
+        info: (title, content) => this.$info({ title, content }),
       },
       onCustomAction: async ({ actionId, payload, runtime }) => {
         if (actionId === 'books.openEdit') {
@@ -88,7 +87,7 @@ export default Vue.extend({
         if (actionId === 'books.submitCreate') {
           const values = payload && payload.values ? payload.values : payload || {}
           const seq = String(Date.now()).slice(-3)
-          const fullValues: RuntimeDemoBook = {
+          const fullValues = {
             id: `BK-${seq}`,
             title: values.title || '',
             author: values.author || '',
@@ -131,7 +130,7 @@ export default Vue.extend({
           return
         }
         if (actionId === 'books.toggleStock') {
-          const record = payload && payload.record ? (payload.record as RuntimeDemoBook) : null
+          const record = payload && payload.record ? payload.record : null
           if (!record) return
           const next = !record.inStock
           await ds.update({ id: record.id, values: { inStock: next } })

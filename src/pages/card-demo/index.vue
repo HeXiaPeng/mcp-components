@@ -29,20 +29,16 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue'
 import {
   SchemaCard,
   SchemaForm,
   SchemaTable,
-  type SchemaButtonConfig,
-  type SchemaCardConfig,
-  type SchemaInputConfig,
-  type SchemaTableColumnConfig,
 } from 'schema-ui-vue2-runtime'
-import { initialWorkOrders, type WorkOrderRow } from './mock'
+import { initialWorkOrders } from './mock'
 
-const filterFields: SchemaInputConfig[] = [
+const filterFields = [
   { key: 'code', label: '工单号', placeholder: '请输入工单号', col: 6 },
   { key: 'title', label: '标题', placeholder: '请输入标题关键字', col: 6 },
   {
@@ -60,7 +56,7 @@ const filterFields: SchemaInputConfig[] = [
   { key: 'owner', label: '处理人', placeholder: '请输入处理人', col: 6 },
 ]
 
-const columns: SchemaTableColumnConfig[] = [
+const columns = [
   { key: 'code', title: '工单号', dataIndex: 'code', width: 150, link: true },
   { key: 'title', title: '标题', dataIndex: 'title', width: 260 },
   { key: 'status', title: '状态', dataIndex: 'status', width: 120 },
@@ -68,7 +64,7 @@ const columns: SchemaTableColumnConfig[] = [
   { key: 'createdAt', title: '创建时间', dataIndex: 'createdAt', width: 170 },
 ]
 
-const rowButtons: SchemaButtonConfig[] = [
+const rowButtons = [
   { key: 'detail', text: '查看', type: 'link', placement: 'rowRight', action: 'order.detail' },
 ]
 
@@ -80,19 +76,19 @@ export default Vue.extend({
       filterFields,
       columns,
       rowButtons,
-      query: {} as Record<string, any>,
-      activeQuery: {} as Record<string, any>,
+      query: {},
+      activeQuery: {},
       loading: false,
     }
   },
   computed: {
-    filterCardConfig(): SchemaCardConfig {
+    filterCardConfig() {
       return { title: '筛选条件' }
     },
-    tableCardConfig(): SchemaCardConfig {
+    tableCardConfig() {
       return { title: `工单列表` }
     },
-    filteredRows(): WorkOrderRow[] {
+    filteredRows() {
       const q = this.activeQuery
       const code = String(q.code || '').trim()
       const title = String(q.title || '').trim()
@@ -108,7 +104,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    onQueryInput(values: Record<string, any>) {
+    onQueryInput(values) {
       this.query = { ...values }
     },
     onSearch() {
@@ -116,19 +112,19 @@ export default Vue.extend({
       window.setTimeout(() => {
         this.activeQuery = { ...this.query }
         this.loading = false
-        const message = (this as any).$message
+        const message = this.$message
         message.success(`查询完成，共 ${this.filteredRows.length} 条`)
       }, 300)
     },
     onReset() {
-      const form = this.$refs.filterForm as any
+      const form = this.$refs.filterForm
       if (form && typeof form.resetFields === 'function') form.resetFields()
       this.query = {}
       this.activeQuery = {}
     },
-    onTableButtonClick(payload: { button: SchemaButtonConfig; record: WorkOrderRow }) {
+    onTableButtonClick(payload) {
       if (payload.button.action === 'order.detail') {
-        const message = (this as any).$message
+        const message = this.$message
         message.info(`查看工单 ${payload.record.code}：${payload.record.title}`)
       }
     },

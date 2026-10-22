@@ -28,51 +28,24 @@
       :scroll="{ x: 'max-content' }"
       :rowSelection="computedRowSelection"
       @change="onTableChange"
-    >
-      <template slot="actions" slot-scope="text, record">
-        <slot name="rowActions" :record="record">
-          <a-space>
-            <template v-for="btn in rowRightButtons">
-              <a-popconfirm
-                v-if="btn.confirm"
-                :key="btn.key"
-                :title="btn.confirm.title"
-                @confirm="() => onRowButtonClick(btn, record)"
-              >
-                <SchemaButton :config="btn" />
-              </a-popconfirm>
-              <SchemaButton
-                v-else
-                :key="btn.key"
-                :config="btn"
-                @click="() => onRowButtonClick(btn, record)"
-              />
-            </template>
-          </a-space>
-        </slot>
-      </template>
-    </a-table>
+    />
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue'
 import SchemaButton from './SchemaButton.vue'
-import type {
-  SchemaButtonConfig,
-  SchemaTableColumnConfig,
-} from '../../renderer/schemaTypes'
 
 export default Vue.extend({
   name: 'SchemaTable',
   components: { SchemaButton },
   props: {
     columns: {
-      type: Array as () => SchemaTableColumnConfig[],
+      type: Array,
       required: true,
     },
     dataSource: {
-      type: Array as () => any[],
+      type: Array,
       required: true,
     },
     loading: {
@@ -84,11 +57,11 @@ export default Vue.extend({
       default: 'id',
     },
     topRightButtons: {
-      type: Array as () => SchemaButtonConfig[],
+      type: Array,
       default: () => [],
     },
     rowRightButtons: {
-      type: Array as () => SchemaButtonConfig[],
+      type: Array,
       default: () => [],
     },
     enableSelection: {
@@ -96,21 +69,21 @@ export default Vue.extend({
       default: false,
     },
     selectedRowKeys: {
-      type: Array as () => (string | number)[],
+      type: Array,
       default: () => [],
     },
   },
   computed: {
-    antdColumns(): any[] {
+    antdColumns() {
       const base = this.columns.map((c) => {
-        const col: any = {
+        const col = {
           title: c.title,
           dataIndex: c.dataIndex,
           key: c.key,
           width: c.width,
         }
         if (c.link) {
-          col.customRender = (text: any, record: any) =>
+          col.customRender = (text, record) =>
             this.$createElement(
               'a',
               { on: { click: () => this.onCellLinkClick(c, record) } },
@@ -126,15 +99,15 @@ export default Vue.extend({
           key: 'actions',
           width: 160,
           fixed: 'right',
-          scopedSlots: { customRender: 'actions' },
+          customRender: (_text, record) => this.renderRowActions(record),
         },
       ]
     },
-    computedRowSelection(): any {
+    computedRowSelection() {
       if (!this.enableSelection) return null
       return {
         selectedRowKeys: this.selectedRowKeys || [],
-        onChange: (keys: (string | number)[]) => {
+        onChange: (keys) => {
           this.$emit('update:selectedRowKeys', keys)
           this.$emit('selection-change', { keys, rows: this.selectedRows(keys) })
         },
@@ -142,24 +115,50 @@ export default Vue.extend({
     },
   },
   methods: {
-    selectedRows(keys: (string | number)[]): any[] {
+    selectedRows(keys) {
       const keySet = new Set(keys)
-      return (this.dataSource || []).filter((r: any) => keySet.has(r && r[this.rowKey]))
+      return (this.dataSource || []).filter((r) => keySet.has(r && r[this.rowKey]))
     },
-    onTopButtonClick(btn: SchemaButtonConfig) {
+    onTopButtonClick(btn) {
       this.$emit('button-click', { button: btn })
     },
-    onRowButtonClick(btn: SchemaButtonConfig, record: any) {
+    onRowButtonClick(btn, record) {
       this.$emit('button-click', { button: btn, record })
     },
-    onCellLinkClick(column: SchemaTableColumnConfig, record: any) {
+    onCellLinkClick(column, record) {
       this.$emit('cell-link-click', {
         column,
         record,
         value: record ? record[column.dataIndex] : undefined,
       })
     },
-    onTableChange(_pagination: any, _filters: any, _sorter: any) {
+    renderRowActions(record) {
+      const rowActionsSlot = this.$scopedSlots.rowActions
+      if (rowActionsSlot) {
+        return rowActionsSlot({ record })
+      }
+      const buttons = (this.rowRightButtons || []).map((btn) => {
+        const button = this.$createElement(SchemaButton, {
+          key: btn.key,
+          props: { config: btn },
+          on: { click: () => this.onRowButtonClick(btn, record) },
+        })
+        if (btn.confirm) {
+          return this.$createElement(
+            'a-popconfirm',
+            {
+              key: `${btn.key}-popconfirm`,
+              props: { title: btn.confirm.title },
+              on: { confirm: () => this.onRowButtonClick(btn, record) },
+            },
+            [button],
+          )
+        }
+        return button
+      })
+      return this.$createElement('a-space', {}, buttons)
+    },
+    onTableChange(_pagination, _filters, _sorter) {
     },
   },
 })

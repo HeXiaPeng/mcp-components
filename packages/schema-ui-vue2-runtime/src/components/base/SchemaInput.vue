@@ -46,9 +46,8 @@
   </a-form-model-item>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue'
-import type { SchemaInputConfig } from '../../renderer/schemaTypes'
 
 export default Vue.extend({
   name: 'SchemaInput',
@@ -58,31 +57,28 @@ export default Vue.extend({
       default: undefined,
     },
     config: {
-      type: Object as () => SchemaInputConfig & {
-        inputType?: string
-        options?: Array<{ label: string; value: string | number; description?: string }>
-      },
+      type: Object,
       required: true,
     },
   },
   computed: {
-    computedVisible(): boolean {
+    computedVisible() {
       return this.config.visible !== false
     },
-    computedInputType(): string {
-      const t = (this.config as any).inputType
+    computedInputType() {
+      const t = this.config.inputType
       return t === 'radio' || t === 'select' ? t : 'input'
     },
-    computedOptions(): Array<{ label: string; value: string | number; description?: string }> {
-      const opts = (this.config as any).options
+    computedOptions() {
+      const opts = this.config.options
       if (Array.isArray(opts)) return opts
       return []
     },
-    rules(): any[] | undefined {
+    rules() {
       if (!this.config.required) return undefined
       const inputType = this.computedInputType
       const trigger = inputType === 'input' ? 'blur' : 'change'
-      const validator = (_rule: any, val: any, callback: (err?: Error) => void) => {
+      const validator = (_rule, val, callback) => {
         const empty = val === undefined || val === null || val === ''
         if (empty) callback(new Error(`请${inputType === 'input' ? '输入' : '选择'}${this.config.label}`))
         else callback()
@@ -91,15 +87,15 @@ export default Vue.extend({
     },
   },
   methods: {
-    onInput(e: any) {
+    onInput(e) {
       const next = e && e.target ? e.target.value : e
       this.$emit('input', next)
     },
-    onRadioChange(e: any) {
+    onRadioChange(e) {
       const next = e && e.target ? e.target.value : e
       this.$emit('input', next)
     },
-    onSelectChange(val: any) {
+    onSelectChange(val) {
       this.$emit('input', val === undefined ? '' : val)
     },
   },

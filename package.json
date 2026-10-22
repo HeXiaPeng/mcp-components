@@ -6,9 +6,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "check": "tsc -p tsconfig.json --noEmit",
-    "lint": "eslint . --ext .ts,.vue",
-    "lint:fix": "eslint . --ext .ts,.vue --fix"
+    "lint": "eslint . --ext .js,.vue",
+    "lint:fix": "eslint . --ext .js,.vue --fix"
   },
   "dependencies": {
     "ant-design-vue": "1.7.2",
@@ -18,16 +17,12 @@
     "vue-router": "^3.6.5"
   },
   "devDependencies": {
-    "@types/node": "^22.15.30",
-    "@typescript-eslint/eslint-plugin": "^7.0.1",
-    "@typescript-eslint/parser": "^7.0.1",
     "vite-plugin-vue2": "^2.0.3",
     "autoprefixer": "^10.4.17",
     "eslint": "^8.56.0",
     "eslint-plugin-vue": "^9.20.1",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
-    "typescript": "~5.3.3",
     "vite": "^2.9.18",
     "vue-template-compiler": "2.6.11"
   }

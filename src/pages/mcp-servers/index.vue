@@ -2,19 +2,18 @@
   <SchemaRenderer v-if="runtime" :schema="schema" :runtime="runtime" />
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue'
-import { initialMcpServers, type McpServerItem } from './mock'
+import { initialMcpServers } from './mock'
 import SchemaRenderer from '@/renderer/SchemaRenderer.vue'
 import schema from './pageSchema.json'
 import { createSchemaRuntime } from '@/runtime/createRuntime'
 import { createFetchRequestAdapter } from '@/runtime/adapters/request'
 import { createMemoryDataSource } from '@/runtime/adapters/memoryDataSource'
-import type { SchemaRuntime } from '@/runtime/types'
 
-function formatNow(): string {
+function formatNow() {
   const d = new Date()
-  const pad = (n: number) => String(n).padStart(2, '0')
+  const pad = (n) => String(n).padStart(2, '0')
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
@@ -25,13 +24,13 @@ export default Vue.extend({
   },
   data() {
     return {
-      schema: schema as any,
-      runtime: null as SchemaRuntime | null,
+      schema: schema,
+      runtime: null,
     }
   },
   created() {
     const request = createFetchRequestAdapter()
-    const ds = createMemoryDataSource<McpServerItem>({
+    const ds = createMemoryDataSource({
       initialRows: initialMcpServers,
       filter(row, filter) {
         const keyword = filter && filter.keyword ? String(filter.keyword).trim() : ''
@@ -46,16 +45,16 @@ export default Vue.extend({
       },
     })
 
-    this.runtime = createSchemaRuntime(this.schema as any, {
+    this.runtime = createSchemaRuntime(this.schema, {
       request,
       dataSources: {
         mcpServers: ds,
       },
       notify: {
-        success: (msg) => (this as any).$message.success(msg),
-        error: (msg) => (this as any).$message.error(msg),
-        loading: (msg, durationSeconds) => (this as any).$message.loading(msg, durationSeconds),
-        info: (title, content) => (this as any).$info({ title, content }),
+        success: (msg) => this.$message.success(msg),
+        error: (msg) => this.$message.error(msg),
+        loading: (msg, durationSeconds) => this.$message.loading(msg, durationSeconds),
+        info: (title, content) => this.$info({ title, content }),
       },
       onCustomAction: async ({ actionId, payload, runtime }) => {
         if (actionId === 'mcpServers.openEdit') {
@@ -77,7 +76,7 @@ export default Vue.extend({
           const fullValues = {
             ...values,
             id: `MCP-${seq}`,
-            status: 'stopped' as const,
+            status: 'stopped',
             toolsCount: 0,
             createdAt: now,
             lastUsedAt: now,
@@ -105,9 +104,9 @@ export default Vue.extend({
           return
         }
         if (actionId === 'mcpServers.toggleStatus') {
-          const record = payload && payload.record ? (payload.record as McpServerItem) : null
+          const record = payload && payload.record ? payload.record : null
           if (!record) return
-          const nextStatus: McpServerItem['status'] =
+          const nextStatus =
             record.status === 'running' ? 'stopped' : record.status === 'stopped' ? 'running' : 'stopped'
           await ds.update({
             id: record.id,
@@ -118,7 +117,7 @@ export default Vue.extend({
           return
         }
         if (actionId === 'mcpServers.restart') {
-          const record = payload && payload.record ? (payload.record as McpServerItem) : null
+          const record = payload && payload.record ? payload.record : null
           if (!record) return
           await ds.update({
             id: record.id,

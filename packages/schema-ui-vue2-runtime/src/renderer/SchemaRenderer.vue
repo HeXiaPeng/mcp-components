@@ -125,13 +125,12 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue'
 import SchemaForm from '../components/base/SchemaForm.vue'
 import SchemaButton from '../components/base/SchemaButton.vue'
 import SchemaTable from '../components/base/SchemaTable.vue'
 import SchemaModal from '../components/base/SchemaModal.vue'
-import type { PageSchema, SchemaRuntime } from '../runtime/types'
 
 export default Vue.extend({
   name: 'SchemaRenderer',
@@ -143,32 +142,32 @@ export default Vue.extend({
   },
   props: {
     schema: {
-      type: Object as () => PageSchema,
+      type: Object,
       required: true,
     },
     runtime: {
-      type: Object as () => SchemaRuntime,
+      type: Object,
       required: true,
     },
   },
   data() {
     return {
-      modalFormModels: {} as Record<string, Record<string, any>>,
+      modalFormModels: {},
     }
   },
   computed: {
-    tables(): any {
+    tables() {
       return this.runtime.tables
     },
   },
   methods: {
-    getNodeMeta(node: any): any {
+    getNodeMeta(node) {
       return node && node.meta && typeof node.meta === 'object' ? node.meta : {}
     },
-    getFieldOptionsResolver(): ((field: any) => any) | undefined {
-      return (this.runtime as any).resolveFieldOptions
+    getFieldOptionsResolver() {
+      return this.runtime.resolveFieldOptions
     },
-    getSelectedRowKeys(node: any): (string | number)[] {
+    getSelectedRowKeys(node) {
       const meta = this.getNodeMeta(node)
       if (meta.selectedRowKeysStateKey && typeof meta.selectedRowKeysStateKey === 'string') {
         const v = this.runtime.getState(meta.selectedRowKeysStateKey)
@@ -176,7 +175,7 @@ export default Vue.extend({
       }
       return []
     },
-    onSelectionChange(node: any, keys: (string | number)[]) {
+    onSelectionChange(node, keys) {
       const meta = this.getNodeMeta(node)
       if (meta.selectedRowKeysStateKey && typeof meta.selectedRowKeysStateKey === 'string') {
         this.runtime.setState(meta.selectedRowKeysStateKey, keys)
@@ -186,85 +185,85 @@ export default Vue.extend({
         payload: { keys },
       }).catch(() => {})
     },
-    resolveFieldOptions(node: any): any[] {
-      return (node.fields || []).map((f: any) => this.resolveSingleField(f))
+    resolveFieldOptions(node) {
+      return (node.fields || []).map((f) => this.resolveSingleField(f))
     },
-    resolveModalFieldOptions(node: any): any[] {
+    resolveModalFieldOptions(node) {
       const modal = node.modal || {}
-      return (modal.fields || []).map((f: any) => this.resolveSingleField(f))
+      return (modal.fields || []).map((f) => this.resolveSingleField(f))
     },
-    resolveModalConfig(node: any): any {
+    resolveModalConfig(node) {
       const base = node.modal || {}
-      const fields = (base.fields || []).map((f: any) => this.resolveSingleField(f))
+      const fields = (base.fields || []).map((f) => this.resolveSingleField(f))
       return { ...base, fields }
     },
-    resolveSingleField(field: any): any {
+    resolveSingleField(field) {
       if (!field) return field
       const resolver = this.getFieldOptionsResolver()
       if (typeof resolver !== 'function') return field
       const resolved = resolver(field)
       return resolved && typeof resolved === 'object' ? resolved : field
     },
-    getVisible(key: string): boolean {
+    getVisible(key) {
       return Boolean(this.runtime.getState(key))
     },
-    setVisible(key: string, value: boolean) {
+    setVisible(key, value) {
       this.runtime.setState(key, value)
     },
-    onModalVisibleChange(visibleKey: string, valueKey: string | undefined, visible: boolean) {
+    onModalVisibleChange(visibleKey, valueKey, visible) {
       this.setVisible(visibleKey, visible)
       if (!visible && valueKey) this.runtime.setState(valueKey, null)
     },
-    getModalValue(key?: string): Record<string, any> {
+    getModalValue(key) {
       if (!key) return {}
       const v = this.runtime.getState(key)
       if (!v || typeof v !== 'object') return {}
       return v
     },
-    getModalFormModel(node: any): Record<string, any> {
+    getModalFormModel(node) {
       return this.modalFormModels[node.id] || {}
     },
-    onModalFormInput(node: any, next: Record<string, any>) {
+    onModalFormInput(node, next) {
       this.$set(this.modalFormModels, node.id, next)
     },
-    getStateObject(key: string): Record<string, any> {
+    getStateObject(key) {
       const v = this.runtime.getState(key)
       if (!v || typeof v !== 'object') return {}
       return v
     },
-    setStateObject(key: string, value: Record<string, any>) {
+    setStateObject(key, value) {
       this.runtime.setState(key, value)
     },
-    onFormButton(actionId: string) {
+    onFormButton(actionId) {
       if (!actionId) return
       this.runtime.dispatch({ actionId, payload: undefined }).catch((e) => {
         const msg = e && e.message ? e.message : '操作失败'
-        ;(this as any).$message.error(msg)
+        ;this.$message.error(msg)
       })
     },
-    onTopButtonDirect(node: any, btn: any) {
+    onTopButtonDirect(node, btn) {
       if (!btn || !btn.action) return
       this.runtime.dispatch({ actionId: String(btn.action), payload: { button: btn } }).catch((e) => {
         const msg = e && e.message ? e.message : '操作失败'
-        ;(this as any).$message.error(msg)
+        ;this.$message.error(msg)
       })
     },
-    onRowButtonDirect(node: any, btn: any, record: any) {
+    onRowButtonDirect(node, btn, record) {
       if (!btn || !btn.action) return
       this.runtime.dispatch({ actionId: String(btn.action), payload: { button: btn, record } }).catch((e) => {
         const msg = e && e.message ? e.message : '操作失败'
-        ;(this as any).$message.error(msg)
+        ;this.$message.error(msg)
       })
     },
-    onTableButton(tableId: string, payload: any) {
+    onTableButton(tableId, payload) {
       const btn = payload && payload.button ? payload.button : undefined
       if (!btn || !btn.action) return
       this.runtime.dispatch({ actionId: String(btn.action), payload }).catch((e) => {
         const msg = e && e.message ? e.message : '操作失败'
-        ;(this as any).$message.error(msg)
+        ;this.$message.error(msg)
       })
     },
-    onModalSubmit(modalId: string, actionId: string, values: Record<string, any>) {
+    onModalSubmit(modalId, actionId, values) {
       const mergedValues = {
         ...(this.modalFormModels[modalId] || {}),
         ...(values || {}),
@@ -277,7 +276,7 @@ export default Vue.extend({
       this.$set(this.modalFormModels, modalId, {})
       this.runtime.dispatch({ actionId, payload }).catch((e) => {
         const msg = e && e.message ? e.message : '提交失败'
-        ;(this as any).$message.error(msg)
+        ;this.$message.error(msg)
       })
     },
   },

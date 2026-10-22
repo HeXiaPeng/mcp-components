@@ -28,13 +28,12 @@
   </a-form-model>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue'
 import SchemaInput from './SchemaInput.vue'
-import type { SchemaFormEffect, SchemaInputConfig } from '../../renderer/schemaTypes'
 import { applyLinkage } from '../../utils/linkage'
 
-function applyTemplate(tpl: string, value: any, model: Record<string, any>) {
+function applyTemplate(tpl, value, model) {
   return tpl.replace(/\{value\}/g, String(value ?? '')).replace(/\{(\w+)\}/g, (_, k) => String(model[k] ?? ''))
 }
 
@@ -43,76 +42,76 @@ export default Vue.extend({
   components: { SchemaInput },
   props: {
     value: {
-      type: Object as () => Record<string, any>,
+      type: Object,
       default: () => ({}),
     },
     fields: {
-      type: Array as () => SchemaInputConfig[],
+      type: Array,
       required: true,
     },
     effects: {
-      type: Array as () => SchemaFormEffect[],
+      type: Array,
       default: () => [],
     },
   },
   data() {
     return {
-      innerModel: {} as Record<string, any>,
+      innerModel: {},
     }
   },
   computed: {
-    computedFields(): SchemaInputConfig[] {
+    computedFields() {
       return applyLinkage(this.fields || [], this.innerModel)
     },
-    hasColLayout(): boolean {
-      return (this.computedFields || []).some((f: any) => typeof (f && f.col) === 'number' || typeof (f && f.span) === 'number')
+    hasColLayout() {
+      return (this.computedFields || []).some((f) => typeof (f && f.col) === 'number' || typeof (f && f.span) === 'number')
     },
   },
   watch: {
     value: {
       immediate: true,
       deep: true,
-      handler(nextVal: Record<string, any>) {
+      handler(nextVal) {
         this.innerModel = { ...(nextVal || {}) }
       },
     },
   },
   methods: {
-    getFieldCol(field: any): number {
+    getFieldCol(field) {
       if (field && typeof field.col === 'number') return field.col
       if (field && typeof field.span === 'number') return field.span
       return 24
     },
-    getFieldStyle(_field: any): Record<string, any> | undefined {
+    getFieldStyle(_field) {
       return undefined
     },
-    validate(): Promise<boolean> {
-      const form: any = this.$refs.formRef
+    validate() {
+      const form = this.$refs.formRef
       if (!form || typeof form.validate !== 'function') return Promise.resolve(true)
       return new Promise((resolve) => {
-        form.validate((valid: boolean) => resolve(valid))
+        form.validate((valid) => resolve(valid))
       })
     },
-    setFieldsValue(partial: Record<string, any>) {
+    setFieldsValue(partial) {
       this.innerModel = { ...this.innerModel, ...partial }
       this.$emit('input', { ...this.innerModel })
     },
     resetFields() {
-      const form: any = this.$refs.formRef
+      const form = this.$refs.formRef
       if (form && typeof form.resetFields === 'function') form.resetFields()
       this.innerModel = {}
       this.$emit('input', {})
     },
-    onFieldInput(key: string, value: any) {
+    onFieldInput(key, value) {
       this.innerModel = { ...this.innerModel, [key]: value }
       this.runEffects(key, value)
       this.$emit('input', { ...this.innerModel })
     },
-    runEffects(key: string, value: any) {
+    runEffects(key, value) {
       const matched = (this.effects || []).filter((e) => e.on === key)
       if (matched.length === 0) return
 
-      const nextPatch: Record<string, any> = {}
+      const nextPatch = {}
       for (const eff of matched) {
         if (eff.type === 'mirror') {
           nextPatch[eff.target] = value

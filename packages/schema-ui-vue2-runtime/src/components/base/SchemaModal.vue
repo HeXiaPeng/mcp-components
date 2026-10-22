@@ -20,10 +20,9 @@
   </a-modal>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue'
 import SchemaForm from './SchemaForm.vue'
-import type { SchemaModalConfig } from '../../renderer/schemaTypes'
 
 export default Vue.extend({
   name: 'SchemaModal',
@@ -34,30 +33,30 @@ export default Vue.extend({
       required: true,
     },
     config: {
-      type: Object as () => SchemaModalConfig,
+      type: Object,
       required: true,
     },
     value: {
-      type: Object as () => Record<string, any>,
+      type: Object,
       default: () => ({}),
     },
   },
   data() {
     return {
-      formModel: {} as Record<string, any>,
+      formModel: {},
     }
   },
   watch: {
     visible: {
       immediate: true,
-      handler(nextVisible: boolean) {
+      handler(nextVisible) {
         if (!nextVisible) return
-        const nextModel: Record<string, any> = {}
+        const nextModel = {}
         for (const f of this.config.fields || []) {
           if (Object.prototype.hasOwnProperty.call(this.value, f.key)) {
             nextModel[f.key] = this.value[f.key]
           } else if (Object.prototype.hasOwnProperty.call(f, 'defaultValue')) {
-            nextModel[f.key] = (f as any).defaultValue
+            nextModel[f.key] = f.defaultValue
           } else {
             nextModel[f.key] = undefined
           }
@@ -67,7 +66,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    onFormInput(nextModel: Record<string, any>) {
+    onFormInput(nextModel) {
       this.formModel = nextModel
     },
     onCancel() {
@@ -75,9 +74,9 @@ export default Vue.extend({
       this.$emit('cancel')
     },
     onOk() {
-      const form: any = this.$refs.formRef
+      const form = this.$refs.formRef
       const validate = form && typeof form.validate === 'function' ? form.validate() : Promise.resolve(true)
-      validate.then((valid: boolean) => {
+      validate.then((valid) => {
         if (!valid) return
         this.$emit('submit', { ...this.formModel })
         this.$emit('update:visible', false)

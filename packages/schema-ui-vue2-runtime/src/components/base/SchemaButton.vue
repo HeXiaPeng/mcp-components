@@ -4,15 +4,14 @@
   </a-button>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue'
-import type { SchemaButtonConfig } from '../../renderer/schemaTypes'
 
 export default Vue.extend({
   name: 'SchemaButton',
   props: {
     config: {
-      type: Object as () => SchemaButtonConfig,
+      type: Object,
       required: true,
     },
   },

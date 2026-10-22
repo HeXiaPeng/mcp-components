@@ -21,23 +21,22 @@
   </a-card>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue'
-import type { SchemaCardConfig } from '../../renderer/schemaTypes'
 
 export default Vue.extend({
   name: 'SchemaCard',
   props: {
     config: {
-      type: Object as () => SchemaCardConfig,
-      default: (): SchemaCardConfig => ({}),
+      type: Object,
+      default: () => ({}),
     },
   },
   computed: {
-    hasTitle(): boolean {
+    hasTitle() {
       return Boolean(this.config.title) || Boolean(this.$slots.title)
     },
-    hasExtra(): boolean {
+    hasExtra() {
       return Boolean(this.config.extraText) || Boolean(this.$slots.extra)
     },
   },

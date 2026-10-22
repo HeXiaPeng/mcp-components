@@ -2,15 +2,14 @@
   <SchemaRenderer v-if="runtime" :schema="schema" :runtime="runtime" />
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue'
-import { initialWorkOrders, type WorkOrderItem } from './mock'
+import { initialWorkOrders } from './mock'
 import SchemaRenderer from '@/renderer/SchemaRenderer.vue'
 import schema from './pageSchema.json'
 import { createSchemaRuntime } from '@/runtime/createRuntime'
 import { createFetchRequestAdapter } from '@/runtime/adapters/request'
 import { createMemoryDataSource } from '@/runtime/adapters/memoryDataSource'
-import type { SchemaRuntime } from '@/runtime/types'
 
 export default Vue.extend({
   name: 'WorkOrdersPage',
@@ -19,13 +18,13 @@ export default Vue.extend({
   },
   data() {
     return {
-      schema: schema as any,
-      runtime: null as SchemaRuntime | null,
+      schema: schema,
+      runtime: null,
     }
   },
   created() {
     const request = createFetchRequestAdapter()
-    const ds = createMemoryDataSource<WorkOrderItem>({
+    const ds = createMemoryDataSource({
       initialRows: initialWorkOrders,
       filter(row, filter) {
         const keyword = filter && filter.keyword ? String(filter.keyword).trim() : ''
@@ -36,16 +35,16 @@ export default Vue.extend({
       },
     })
 
-    this.runtime = createSchemaRuntime(this.schema as any, {
+    this.runtime = createSchemaRuntime(this.schema, {
       request,
       dataSources: {
         workOrders: ds,
       },
       notify: {
-        success: (msg) => (this as any).$message.success(msg),
-        error: (msg) => (this as any).$message.error(msg),
-        loading: (msg, durationSeconds) => (this as any).$message.loading(msg, durationSeconds),
-        info: (title, content) => (this as any).$info({ title, content }),
+        success: (msg) => this.$message.success(msg),
+        error: (msg) => this.$message.error(msg),
+        loading: (msg, durationSeconds) => this.$message.loading(msg, durationSeconds),
+        info: (title, content) => this.$info({ title, content }),
       },
       onCustomAction: async ({ actionId, payload, runtime }) => {
         if (actionId === 'workOrders.openEdit') {
