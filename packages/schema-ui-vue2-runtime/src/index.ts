@@ -1,4 +1,5 @@
 export { default as SchemaButton } from './components/base/SchemaButton.vue'
+export { default as SchemaCard } from './components/base/SchemaCard.vue'
 export { default as SchemaForm } from './components/base/SchemaForm.vue'
 export { default as SchemaInput } from './components/base/SchemaInput.vue'
 export { default as SchemaModal } from './components/base/SchemaModal.vue'

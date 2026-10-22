@@ -16,6 +16,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "schema-ui-vue2-runtime": [
+        "./packages/schema-ui-vue2-runtime/src/index.ts"
       ]
     },
     "types": [

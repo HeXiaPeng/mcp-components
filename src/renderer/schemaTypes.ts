@@ -73,4 +73,6 @@ export interface SchemaTableColumnConfig {
   title: string
   dataIndex: string
   width?: number
+  /** 单元格渲染为可点击链接，点击时派发 cell-link-click 事件 */
+  link?: boolean
 }

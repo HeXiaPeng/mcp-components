@@ -25,6 +25,13 @@ export interface SchemaButtonConfig {
   meta?: Record<string, any>
 }
 
+export interface SchemaCardConfig {
+  title?: string
+  bordered?: boolean
+  hoverable?: boolean
+  extraText?: string
+}
+
 export interface SchemaFieldLinkageRule {
   when: {
     field: string
@@ -73,4 +80,6 @@ export interface SchemaTableColumnConfig {
   title: string
   dataIndex: string
   width?: number
+  /** 单元格渲染为可点击链接，点击时派发 cell-link-click 事件 */
+  link?: boolean
 }

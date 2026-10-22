@@ -19,6 +19,7 @@
     </div>
 
     <a-table
+      bordered
       :columns="antdColumns"
       :dataSource="dataSource"
       :loading="loading"
@@ -139,6 +140,13 @@ export default Vue.extend({
     },
     onRowButtonClick(btn: SchemaButtonConfig, record: any) {
       this.$emit('button-click', { button: btn, record })
+    },
+    onCellLinkClick(column: SchemaTableColumnConfig, record: any) {
+      this.$emit('cell-link-click', {
+        column,
+        record,
+        value: record ? record[column.dataIndex] : undefined,
+      })
     },
     onTableChange(_pagination: any, _filters: any, _sorter: any) {
     },

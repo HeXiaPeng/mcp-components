@@ -5,6 +5,8 @@ import FormLinkagePage from '@/pages/form-linkage/index.vue'
 import McpServersPage from '@/pages/mcp-servers/index.vue'
 import ProjectWorkOrdersPage from '@/pages/project-workorders/index.vue'
 import RuntimeDemoPage from '@/pages/runtime-demo/index.vue'
+import CardDemoPage from '@/pages/card-demo/index.vue'
+import CardDemoDetailPage from '@/pages/card-demo/detail.vue'
 
 Vue.use(Router)
 
@@ -39,6 +41,16 @@ export default new Router({
       path: '/project-workorders',
       name: 'project-workorders',
       component: ProjectWorkOrdersPage,
+    },
+    {
+      path: '/card-demo',
+      name: 'card-demo',
+      component: CardDemoPage,
+    },
+    {
+      path: '/card-demo/:code',
+      name: 'card-demo-detail',
+      component: CardDemoDetailPage,
     },
   ],
 })
